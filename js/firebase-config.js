@@ -12,14 +12,14 @@
    ================================================================ */
 
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyDh-oJrECMzGOS_NrKRQwRVHS8ZpfShpIU",
-  authDomain: "modista-1.firebaseapp.com",
-  projectId: "modista-1",
-  storageBucket: "modista-1.firebasestorage.app",
-  messagingSenderId: "188600467040",
-  appId: "1:188600467040:web:316b7fb2e407ead8da0d05",
-  measurementId: "G-6P8BZZCZ8V"
+  apiKey:            "PEGA_AQUI_TU_apiKey",
+  authDomain:        "PEGA_AQUI_TU_authDomain",
+  projectId:         "PEGA_AQUI_TU_projectId",
+  storageBucket:     "PEGA_AQUI_TU_storageBucket",
+  messagingSenderId: "PEGA_AQUI_TU_messagingSenderId",
+  appId:             "PEGA_AQUI_TU_appId"
 };
+
 /* ================================================================
    REGLAS DE FIRESTORE (copia esto en Firebase Console → Firestore → Reglas)
    ================================================================

@@ -816,22 +816,6 @@
 
 <script>
 /* ====== APP SHELL ====== */
-// Inicializar Firebase antes de cualquier otra cosa
-(async function() {
-  Auth.initFirebase();
-  Auth.requireAuth();
-  // Si hay usuario Firebase activo, cargar datos desde Firestore
-  Auth.onAuthChanged(async (user) => {
-    if (user) {
-      DB.setup(user.uid, firebase.firestore());
-      await DB.loadAll();
-      nav('dashboard');
-      // Mostrar email en sidebar
-      const emailEl = document.getElementById('sidebarUserEmail');
-      if (emailEl) emailEl.textContent = user.email;
-    }
-  });
-})();
 
 const SECTIONS = ['dashboard','clientes','pedidos','nomina','inventario','compras','cotizaciones','negocio'];
 const TITLES   = { dashboard:'Dashboard', clientes:'Clientes', pedidos:'Pedidos', nomina:'Nómina',
@@ -1022,4 +1006,21 @@ function renderAdminGallery() {
   // Hover for overlay
   grid.querySelectorAll('div[style*="aspect-ratio"]').forEach(el => {
     el.addEventListener('mouseenter', () => el.querySelector('.gallery-admin-overlay').style.opacity='1');
-    el.addEventListener('mouseleave', () => el.querySelector('.gallery-admin-ov
+    el.addEventListener('mouseleave', () => el.querySelector('.gallery-admin-overlay').style.opacity='0');
+  });
+}
+
+function deleteGalleryItem(i) {
+  if (!confirm('¿Eliminar esta foto?')) return;
+  const cfg = DB.getObj('config', {});
+  cfg.gallery.splice(i, 1);
+  DB.setObj('config', cfg);
+  renderAdminGallery();
+  toast('Foto eliminada', 'ok');
+}
+
+/* ====== CONTRASEÑA ====== */
+async function cambiarPassword() {
+  const actual  = document.getElementById('passActual').value;
+  const nueva   = document.getElementById('passNueva').value;
+  const confirm = document.getElementById('p
