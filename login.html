@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iniciar Sesión · ModistaPro</title>
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="login-body">
+
+<div style="text-align:center;padding:2rem 1rem">
+  <div class="login-box">
+    <div class="login-logo" id="loginLogoWrap">✂️</div>
+    <div class="login-title" id="loginTitle">ModistaPro</div>
+    <div class="login-subtitle" id="loginSubtitle">Panel de administración</div>
+
+    <!-- TABS: Login / Registrar -->
+    <div id="tabsWrap" style="display:flex;border:1px solid var(--g3);border-radius:8px;overflow:hidden;margin-bottom:1.5rem">
+      <button id="tabLogin" onclick="switchTab('login')"
+        style="flex:1;padding:.55rem;font-size:.85rem;font-weight:600;background:var(--pr);color:#fff;border:none;cursor:pointer">
+        Iniciar sesión
+      </button>
+      <button id="tabReg" onclick="switchTab('registro')"
+        style="flex:1;padding:.55rem;font-size:.85rem;font-weight:600;background:#fff;color:var(--g6);border:none;cursor:pointer">
+        Crear cuenta
+      </button>
+    </div>
+
+    <div class="login-error" id="loginError"></div>
+    <div id="loginSuccess" style="display:none;background:rgba(16,185,129,.1);color:#065f46;padding:.7rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem;border:1px solid rgba(16,185,129,.2)"></div>
+
+    <!-- FORMULARIO LOGIN -->
+    <div id="formLogin">
+      <div class="form-group">
+        <label for="loginEmail">Correo electrónico</label>
+        <input type="email" id="loginEmail" placeholder="tu@correo.cl" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="loginPass">Contraseña</label>
+        <input type="password" id="loginPass" placeholder="Tu contraseña"
+          onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="login-btn" onclick="doLogin()" id="btnLogin">Ingresar al panel →</button>
+      <div style="margin-top:1rem;font-size:.8rem">
+        <a href="#" onclick="doForgotPassword()" style="color:var(--pr)">¿Olvidaste tu contraseña?</a>
+      </div>
+    </div>
+
+    <!-- FORMULARIO REGISTRO -->
+    <div id="formRegistro" style="display:none">
+      <div class="form-group">
+        <label for="regNegocio">Nombre del negocio</label>
+        <input type="text" id="regNegocio" placeholder="Ej: Confecciones Pérez">
+      </div>
+      <div class="form-group">
+        <label for="regEmail">Correo electrónico</label>
+        <input type="email" id="regEmail" placeholder="tu@correo.cl">
+      </div>
+      <div class="form-group">
+        <label for="regPass">Contraseña (mín. 6 caracteres)</label>
+        <input type="password" id="regPass" placeholder="Crea tu contraseña">
+      </div>
+      <div class="form-group">
+        <label for="regPass2">Confirmar contraseña</label>
+        <input type="password" id="regPass2" placeholder="Repite la contraseña"
+          onkeydown="if(event.key==='Enter')doRegistro()">
+      </div>
+      <button class="login-btn" onclick="doRegistro()" id="btnReg">Crear cuenta →</button>
+    </div>
+
+    <!-- Modo offline aviso -->
+    <div id="offlineNotice" style="display:none;margin-top:1rem;font-size:.75rem;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#92400e;padding:.6rem .9rem;border-radius:8px">
+      ⚠️ <strong>Modo sin conexión:</strong> Firebase no está configurado. Los datos se guardarán solo en este computador.
+    </div>
+
+    <div class="login-info" id="loginInfo" style="margin-top:1.5rem">
+      Todos tus datos quedan protegidos con tu cuenta de correo.
+    </div>
+  </div>
+
+  <a href="index.html" class="login-back">← Volver al sitio</a>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/auth.js"></script>
+
+<script>
+  // Inicializar Firebase
+  const firebaseOk = Auth.initFirebase();
+  if (!firebaseOk) document.getElementById('offlineNotice').style.display = '';
+
+  // Si ya está logueado, ir al panel
+  if (Auth.isLoggedIn()) window.location.href = 'admin.html';
+
+  // Aplicar branding
+  (function() {
+    const cfg = DB.getObj('config', {});
+    if (cfg.name) document.getElementById('loginTitle').textContent = cfg.name;
+    if (cfg.tagline) document.getElementById('loginSubtitle').textContent = cfg.tagline;
+    if (cfg.logoImg) document.getElementById('loginLogoWrap').innerHTML =
+      `<img src="${cfg.logoImg}" alt="${cfg.name || ''}">`;
+    document.title = 'Login · ' + (cfg.name || 'ModistaPro');
+  })();
+
+  function switchTab(tab) {
+    const isLogin = tab === 'login';
+    document.getElementById('formLogin').style.display   = isLogin ? '' : 'none';
+    document.getElementById('formRegistro').style.display = isLogin ? 'none' : '';
+    document.getElementById('tabLogin').style.background = isLogin ? 'var(--pr)' : '#fff';
+    document.getElementById('tabLogin').style.color      = isLogin ? '#fff' : 'var(--g6)';
+    document.getElementById('tabReg').style.background   = isLogin ? '#fff' : 'var(--pr)';
+    document.getElementById('tabReg').style.color        = isLogin ? 'var(--g6)' : '#fff';
+    clearMsg();
+  }
+
+  async function doLogin() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    if (!pass) { showError('Ingresa tu contraseña'); return; }
+
+    setBtnLoading('btnLogin', true, 'Ingresando...');
+    let result;
+    if (firebaseOk && email) {
+      result = await Auth.login(email, pass);
+    } else {
+      // Modo offline: solo contraseña
+      result = Auth._offlineLogin(pass);
+      if (result.ok) sessionStorage.setItem('mp_user', JSON.stringify({ uid:'local', email:'local' }));
+    }
+    setBtnLoading('btnLogin', false, 'Ingresar al panel →');
+
+    if (result.ok) {
+      window.location.href = 'admin.html';
+    } else {
+      showError(result.error || 'Error al iniciar sesión');
+    }
+  }
+
+  async function doRegistro() {
+    const nombre = document.getElementById('regNegocio').value.trim();
+    const email  = document.getElementById('regEmail').value.trim();
+    const pass   = document.getElementById('regPass').value;
+    const pass2  = document.getElementById('regPass2').value;
+
+    if (!email || !pass) { showError('Completa todos los campos'); return; }
+    if (pass !== pass2)  { showError('Las contraseñas no coinciden'); return; }
+    if (pass.length < 6) { showError('La contraseña debe tener al menos 6 caracteres'); return; }
+    if (!firebaseOk)     { showError('Firebase no está configurado. Revisa firebase-config.js'); return; }
+
+    setBtnLoading('btnReg', true, 'Creando cuenta...');
+    const result = await Auth.register(email, pass, nombre);
+    setBtnLoading('btnReg', false, 'Crear cuenta →');
+
+    if (result.ok) {
+      showSuccess('¡Cuenta creada! Redirigiendo...');
+      setTimeout(() => window.location.href = 'admin.html', 1500);
+    } else {
+      showError(result.error);
+    }
+  }
+
+  async function doForgotPassword() {
+    const email = document.getElementById('loginEmail').value.trim();
+    if (!email) { showError('Ingresa tu correo primero'); return; }
+    if (!firebaseOk) { showError('Firebase no configurado'); return; }
+    const result = await Auth.forgotPassword(email);
+    if (result.ok) {
+      showSuccess('📧 Te enviamos un correo para restablecer tu contraseña.');
+    } else {
+      showError(result.error);
+    }
+  }
+
+  function setBtnLoading(btnId, loading, text) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.textContent = text;
+    btn.style.opacity = loading ? '.7' : '1';
+  }
+
+  function showError(msg) {
+    document.getElementById('loginSuccess').style.display = 'none';
+    const el = document.getElementById('loginError');
+    el.textContent = '⚠ ' + msg;
+    el.classList.add('show');
+  }
+
+  function showSuccess(msg) {
+    document.getElementById('loginError').classList.remove('show');
+    const el = document.getElementById('loginSuccess');
+    el.textContent = msg;
+    el.style.display = '';
+  }
+
+  function clearMsg() {
+    document.getElementById('loginError').classList.remove('show');
+    document.getElementById('loginSuccess').style.display = 'none';
+  }
+</script>
+</body>
+</html>

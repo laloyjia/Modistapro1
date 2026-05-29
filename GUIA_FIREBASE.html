@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guía Firebase · ModistaPro</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',sans-serif;background:#f5f3ff;color:#1e293b;line-height:1.7}
+  .wrap{max-width:800px;margin:0 auto;padding:2rem 1.5rem}
+  h1{font-size:1.8rem;font-weight:800;color:#7c3aed;margin-bottom:.25rem}
+  .subtitle{color:#64748b;margin-bottom:2rem}
+  .step{background:#fff;border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;
+    box-shadow:0 2px 12px rgba(124,58,237,.08);border:1px solid #e9d5ff}
+  .step-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+  .step-num{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#f59e0b);
+    color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0}
+  .step-title{font-size:1.05rem;font-weight:700}
+  p{color:#475569;margin-bottom:.75rem;font-size:.95rem}
+  .img-placeholder{background:#f1f5f9;border:2px dashed #cbd5e1;border-radius:8px;
+    padding:1.5rem;text-align:center;color:#94a3b8;margin:1rem 0;font-size:.9rem}
+  code{background:#1e1b4b;color:#a5b4fc;padding:.2rem .5rem;border-radius:4px;font-size:.85rem;font-family:monospace}
+  .code-block{background:#1e1b4b;color:#a5b4fc;padding:1rem 1.2rem;border-radius:8px;
+    font-family:monospace;font-size:.85rem;margin:1rem 0;overflow-x:auto;line-height:1.8}
+  .code-block .key{color:#f59e0b}
+  .code-block .val{color:#86efac}
+  .code-block .comment{color:#64748b}
+  .alert-ok{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.25);
+    color:#065f46;padding:.9rem 1.1rem;border-radius:8px;margin:1rem 0;font-size:.9rem}
+  .alert-wa{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);
+    color:#92400e;padding:.9rem 1.1rem;border-radius:8px;margin:1rem 0;font-size:.9rem}
+  .btn-link{display:inline-flex;align-items:center;gap:.4rem;background:#7c3aed;color:#fff;
+    padding:.6rem 1.2rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:.9rem;margin:.5rem 0}
+  .rules-box{background:#0f172a;color:#94a3b8;padding:1rem 1.2rem;border-radius:8px;
+    font-family:monospace;font-size:.8rem;line-height:1.9;margin:1rem 0}
+  .rules-box .kw{color:#c084fc}
+  .rules-box .str{color:#86efac}
+  ul{padding-left:1.2rem;color:#475569;font-size:.95rem}
+  ul li{margin-bottom:.4rem}
+  .badge{display:inline-block;background:#7c3aed;color:#fff;padding:.15rem .5rem;border-radius:4px;font-size:.78rem;font-weight:700}
+  hr{border:none;border-top:1px solid #e9d5ff;margin:1.5rem 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div style="text-align:center;padding:1.5rem 0 1rem">
+  <div style="font-size:3rem;margin-bottom:.5rem">🔥</div>
+  <h1>Configurar Firebase para ModistaPro</h1>
+  <p class="subtitle">Guía paso a paso — 15 minutos — Gratis</p>
+</div>
+
+<div class="alert-ok">
+  ✅ Con Firebase tendrás: base de datos en la nube, login seguro con correo, acceso desde cualquier dispositivo, y respaldo automático de todos tus datos.
+</div>
+
+<!-- PASO 1 -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">1</div>
+    <div class="step-title">Crear cuenta en Firebase (es gratis)</div>
+  </div>
+  <p>Firebase es un servicio de Google. Si tienes cuenta de Gmail, ya estás casi listo.</p>
+  <a class="btn-link" href="https://console.firebase.google.com" target="_blank">🌐 Abrir Firebase Console</a>
+  <p>Haz clic en <strong>"Crear un proyecto"</strong> → ponle un nombre (ej: <code>modistapro</code>) → Continuar → puedes desactivar Google Analytics → <strong>Crear proyecto</strong>.</p>
+</div>
+
+<!-- PASO 2 -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">2</div>
+    <div class="step-title">Registrar tu sitio web en el proyecto</div>
+  </div>
+  <p>Dentro del proyecto recién creado, busca el ícono <strong>&lt;/&gt;</strong> (Web) en la pantalla principal y haz clic.</p>
+  <p>Ponle un apodo (ej: <code>modistapro-web</code>) → <strong>Registrar app</strong>.</p>
+  <p>Firebase te mostrará un bloque de código como este — <strong>copia esos valores</strong>:</p>
+  <div class="code-block">
+<span class="comment">// Esto aparecerá en tu pantalla con tus datos reales:</span>
+const firebaseConfig = {
+  <span class="key">apiKey</span>: <span class="val">"AIzaSyXXXXXXXXXXXXXXXXXXX"</span>,
+  <span class="key">authDomain</span>: <span class="val">"miproyecto.firebaseapp.com"</span>,
+  <span class="key">projectId</span>: <span class="val">"miproyecto"</span>,
+  <span class="key">storageBucket</span>: <span class="val">"miproyecto.appspot.com"</span>,
+  <span class="key">messagingSenderId</span>: <span class="val">"123456789"</span>,
+  <span class="key">appId</span>: <span class="val">"1:123456789:web:abcdef"</span>
+};
+  </div>
+</div>
+
+<!-- PASO 3 -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">3</div>
+    <div class="step-title">Pegar la configuración en ModistaPro</div>
+  </div>
+  <p>Abre el archivo <code>ModistaPro/js/firebase-config.js</code> con el Bloc de Notas (clic derecho → Abrir con → Bloc de notas).</p>
+  <p>Reemplaza los valores <code>PEGA_AQUI_TU_...</code> con los que copiaste de Firebase. Guarda el archivo.</p>
+  <div class="alert-wa">⚠️ No compartas este archivo con nadie — contiene las claves de tu proyecto.</div>
+</div>
+
+<!-- PASO 4 -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">4</div>
+    <div class="step-title">Activar el login con correo y contraseña</div>
+  </div>
+  <p>En Firebase Console, en el menú izquierdo haz clic en <strong>Authentication</strong> → pestaña <strong>Sign-in method</strong>.</p>
+  <p>Haz clic en <strong>Correo electrónico/contraseña</strong> → activa el primer interruptor → <strong>Guardar</strong>.</p>
+</div>
+
+<!-- PASO 5 -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">5</div>
+    <div class="step-title">Crear la base de datos Firestore</div>
+  </div>
+  <p>En el menú izquierdo, haz clic en <strong>Firestore Database</strong> → <strong>Crear base de datos</strong>.</p>
+  <p>Elige <strong>"Comenzar en modo de producción"</strong> → selecciona la región <code>southamerica-east1</code> (São Paulo, la más cercana) → <strong>Habilitar</strong>.</p>
+</div>
+
+<!-- PASO 6 -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">6</div>
+    <div class="step-title">Configurar las reglas de seguridad de Firestore</div>
+  </div>
+  <p>En Firestore → pestaña <strong>Reglas</strong>. Borra lo que hay y pega esto:</p>
+  <div class="rules-box">
+<span class="kw">rules_version</span> = <span class="str">'2'</span>;
+<span class="kw">service</span> cloud.firestore {
+  <span class="kw">match</span> /databases/{database}/documents {
+    <span class="kw">match</span> /users/{userId}/{document=<span class="str">**</span>} {
+      <span class="kw">allow</span> read, write: <span class="kw">if</span> request.auth != <span class="str">null</span>
+        && request.auth.uid == userId;
+    }
+  }
+}
+  </div>
+  <p>Haz clic en <strong>Publicar</strong>. Esto garantiza que cada dueña solo ve sus propios datos.</p>
+</div>
+
+<!-- PASO 7 -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">7</div>
+    <div class="step-title">Subir el sitio a internet con Netlify</div>
+  </div>
+  <p>El sitio ya está listo para publicarse. La forma más fácil:</p>
+  <ol style="padding-left:1.2rem;color:#475569;font-size:.95rem">
+    <li style="margin-bottom:.6rem">Ve a <a href="https://netlify.com" target="_blank" style="color:#7c3aed">netlify.com</a> → crear cuenta gratis (puedes usar Gmail)</li>
+    <li style="margin-bottom:.6rem">En el panel, arrastra la carpeta <code>ModistaPro</code> completa al área que dice "Arrastra tu sitio aquí"</li>
+    <li style="margin-bottom:.6rem">En ~30 segundos tendrás una URL pública tipo <code>https://tu-negocio.netlify.app</code></li>
+    <li style="margin-bottom:.6rem">En Netlify → Site settings → puedes cambiar el nombre a algo más fácil</li>
+  </ol>
+  <div class="alert-ok">
+    ✅ Una vez publicado, agrega la URL de Netlify en Firebase Console → Authentication → Settings → Authorized domains → Add domain. Esto evita que otros sitios usen tu Firebase.
+  </div>
+</div>
+
+<!-- PASO 8 -->
+<div class="step">
+  <div class="step-header">
+    <div class="step-num">8</div>
+    <div class="step-title">Crear la primera cuenta (la de la dueña)</div>
+  </div>
+  <p>Abre tu sitio publicado y ve a <code>/login.html</code>. Haz clic en la pestaña <strong>"Crear cuenta"</strong>.</p>
+  <p>Ingresa el correo y contraseña de la dueña del negocio → <strong>Crear cuenta</strong>. Eso es todo — ya puede ingresar al panel y sus datos se guardarán en la nube.</p>
+  <div class="alert-wa">
+    ⚠️ Anota bien el correo y contraseña. Si la olvidas, puedes hacer clic en "¿Olvidaste tu contraseña?" y Firebase enviará un correo de recuperación.
+  </div>
+</div>
+
+<hr>
+
+<div style="text-align:center;padding:1rem 0 2rem">
+  <div style="font-size:2rem;margin-bottom:.5rem">🎉</div>
+  <strong style="font-size:1.1rem">¡Listo! Tu ModistaPro ya está en la nube.</strong>
+  <p style="margin-top:.5rem;color:#64748b;font-size:.9rem">
+    Plan gratuito de Firebase incluye: 50.000 lecturas/día, 20.000 escrituras/día, 1 GB de almacenamiento.<br>
+    Más que suficiente para un negocio de confecciones.
+  </p>
+</div>
+
+</div>
+</body>
+</html>

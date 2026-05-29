@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel · ModistaPro</title>
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-placeholder" id="sidebarLogo">✂️</div>
+    <div>
+      <div class="sidebar-brand" id="sidebarBrand">ModistaPro</div>
+      <div class="sidebar-tagline">Panel de gestión</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Principal</div>
+    <ul class="sidebar-nav">
+      <li><button onclick="nav('dashboard')" id="nav-dashboard" class="active">
+        <span class="nav-icon">📊</span> Dashboard
+      </button></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Gestión</div>
+    <ul class="sidebar-nav">
+      <li><button onclick="nav('clientes')" id="nav-clientes">
+        <span class="nav-icon">👤</span> Clientes
+      </button></li>
+      <li><button onclick="nav('pedidos')" id="nav-pedidos">
+        <span class="nav-icon">📦</span> Pedidos
+      </button></li>
+      <li><button onclick="nav('nomina')" id="nav-nomina">
+        <span class="nav-icon">📋</span> Nómina
+      </button></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Operaciones</div>
+    <ul class="sidebar-nav">
+      <li><button onclick="nav('inventario')" id="nav-inventario">
+        <span class="nav-icon">🏷️</span> Inventario
+      </button></li>
+      <li><button onclick="nav('compras')" id="nav-compras">
+        <span class="nav-icon">🛒</span> Compras
+      </button></li>
+      <li><button onclick="nav('cotizaciones')" id="nav-cotizaciones">
+        <span class="nav-icon">📄</span> Cotizaciones
+      </button></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Negocio</div>
+    <ul class="sidebar-nav">
+      <li><button onclick="nav('negocio')" id="nav-negocio">
+        <span class="nav-icon">⚙️</span> Mi Negocio
+      </button></li>
+      <li><a href="index.html" target="_blank">
+        <span class="nav-icon">🌐</span> Ver sitio web
+      </a></li>
+    </ul>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-user">
+      <div class="sidebar-footer-avatar">👩</div>
+      <div>
+        <div class="sidebar-footer-name" id="sidebarUser">Administrador</div>
+        <div class="sidebar-footer-role" id="sidebarUserEmail" style="font-size:.68rem;word-break:break-all">Propietaria</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="Auth.logout()">🚪 Cerrar sesión</button>
+  </div>
+</aside>
+
+<!-- ===== TOPBAR ===== -->
+<header class="topbar">
+  <button class="topbar-hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+  <div class="topbar-breadcrumb">
+    <span>ModistaPro</span>
+    <span>›</span>
+    <strong id="topbarTitle">Dashboard</strong>
+  </div>
+  <div class="topbar-actions">
+    <div class="topbar-search">
+      <span class="topbar-search-icon">🔍</span>
+      <input type="text" placeholder="Buscar..." id="globalSearch" oninput="onGlobalSearch(this.value)">
+    </div>
+    <div class="topbar-notif" title="Notificaciones" onclick="nav('pedidos')">
+      🔔 <span class="topbar-notif-dot" id="notifDot" style="display:none"></span>
+    </div>
+    <div class="topbar-avatar" title="Perfil" onclick="nav('negocio')">👩</div>
+  </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="admin-main">
+
+<!-- ── DASHBOARD ─────────────────────── -->
+<section id="sec-dashboard">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Dashboard</div>
+      <div class="page-subtitle">Resumen general del negocio</div>
+    </div>
+    <div class="page-hdr-actions">
+      <button class="btn bp" onclick="nav('pedidos');Pedidos.abrirModal()">+ Nuevo pedido</button>
+    </div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-icon pr">📦</div>
+      <div>
+        <div class="stat-num" id="dashPedidos">0</div>
+        <div class="stat-lbl">Pedidos activos</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon ok">✅</div>
+      <div>
+        <div class="stat-num" id="dashListos">0</div>
+        <div class="stat-lbl">Pedidos listos</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon wa">⏳</div>
+      <div>
+        <div class="stat-num" id="dashVencidos">0</div>
+        <div class="stat-lbl">Vencidos / urgentes</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon in">👤</div>
+      <div>
+        <div class="stat-num" id="dashClientes">0</div>
+        <div class="stat-lbl">Clientes</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon pr">💰</div>
+      <div>
+        <div class="stat-num" id="dashVentas">—</div>
+        <div class="stat-lbl">Facturación mes</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon er">⚠️</div>
+      <div>
+        <div class="stat-num" id="dashStockBajo">0</div>
+        <div class="stat-lbl">Stock bajo</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📦 Próximas entregas</div>
+        <button class="btn bs bsm" onclick="nav('pedidos')">Ver todos</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Pedido</th><th>Cliente</th><th>Estado</th><th>Entrega</th></tr></thead>
+          <tbody id="dashPedidosTbody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📄 Últimas cotizaciones</div>
+        <button class="btn bs bsm" onclick="nav('cotizaciones')">Ver todas</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>N°</th><th>Cliente</th><th>Total</th><th>Estado</th></tr></thead>
+          <tbody id="dashCotTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensajes de contacto -->
+  <div class="card" style="margin-top:1.25rem">
+    <div class="card-header">
+      <div class="card-title">💬 Solicitudes de contacto recientes</div>
+      <button class="btn bs bsm" onclick="renderContactRequests()">Actualizar</button>
+    </div>
+    <div class="card-body" id="contactRequestsWrap">
+      <div class="empty-state"><div class="empty-icon">📬</div><p>Sin solicitudes aún.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CLIENTES ─────────────────────── -->
+<section id="sec-clientes" style="display:none">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Clientes</div>
+      <div class="page-subtitle">Gestión de clientes y empresas</div>
+    </div>
+    <div class="page-hdr-actions">
+      <button class="btn bs" onclick="openMo('importClientesModal')">📥 Importar Excel</button>
+      <button class="btn bs" onclick="Clientes.exportarExcel()">📤 Exportar</button>
+      <button class="btn bp" onclick="Clientes.abrirModal()">+ Nuevo cliente</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">👤 Lista de clientes (<span id="statClientes">0</span>)</div>
+      <div class="search-bar" style="max-width:260px">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchClientes" placeholder="Buscar cliente...">
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Nombre</th><th>Empresa</th><th>RUT</th><th>Teléfono</th><th>Email</th><th>Ciudad</th><th>Acciones</th></tr>
+        </thead>
+        <tbody id="clientesTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── PEDIDOS ─────────────────────── -->
+<section id="sec-pedidos" style="display:none">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Pedidos</div>
+      <div class="page-subtitle">Gestión de órdenes y entregas</div>
+    </div>
+    <div class="page-hdr-actions">
+      <button class="btn bp" onclick="Pedidos.abrirModal()">+ Nuevo pedido</button>
+    </div>
+  </div>
+  <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat-card"><div class="stat-icon pr">📦</div><div>
+      <div class="stat-num" id="statPedidosTotal">0</div><div class="stat-lbl">Total</div>
+    </div></div>
+    <div class="stat-card"><div class="stat-icon wa">⏳</div><div>
+      <div class="stat-num" id="statPedidosPend">0</div><div class="stat-lbl">Pendientes</div>
+    </div></div>
+    <div class="stat-card"><div class="stat-icon in">🔧</div><div>
+      <div class="stat-num" id="statPedidosProc">0</div><div class="stat-lbl">En proceso</div>
+    </div></div>
+    <div class="stat-card"><div class="stat-icon ok">✅</div><div>
+      <div class="stat-num" id="statPedidosListos">0</div><div class="stat-lbl">Listos</div>
+    </div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📦 Lista de pedidos</div>
+      <div style="display:flex;gap:.75rem;align-items:center">
+        <select id="filterEstado" class="bs" style="padding:.4rem .7rem;border-radius:7px;border:1px solid var(--g3);font-size:.85rem">
+          <option value="">Todos los estados</option>
+          <option>Pendiente</option><option>En Proceso</option>
+          <option>Listo</option><option>Entregado</option><option>Cancelado</option>
+        </select>
+        <div class="search-bar" style="max-width:220px">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchPedidos" placeholder="Buscar...">
+        </div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Cliente</th><th>Pedido</th><th>Estado</th><th>Entrega</th><th>Cant.</th><th>Total</th><th>Acciones</th></tr></thead>
+        <tbody id="pedidosTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── NÓMINA ─────────────────────── -->
+<section id="sec-nomina" style="display:none">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Nómina</div>
+      <div class="page-subtitle">Detalle de personas por pedido</div>
+    </div>
+    <div class="page-hdr-actions">
+      <button class="btn bs" onclick="Nomina.descargarPlantilla()">📋 Plantilla Excel</button>
+      <button class="btn bs" onclick="document.getElementById('importNominaFile').click()">📥 Importar Excel</button>
+      <input type="file" id="importNominaFile" accept=".xlsx,.xls,.csv" style="display:none"
+        onchange="Nomina.importarExcel(this.files[0]);this.value=''">
+      <button class="btn bs" onclick="Nomina.exportarExcel()">📤 Exportar</button>
+      <button class="btn bp" onclick="Nomina.agregarFila()">+ Agregar persona</button>
+    </div>
+  </div>
+  <div id="nominaPedidoWrap"></div>
+  <div id="nominaPedidoInfo"></div>
+  <div id="nominaTableWrap">
+    <div class="empty-state"><div class="empty-icon">📋</div><h3>Selecciona un pedido</h3></div>
+  </div>
+</section>
+
+<!-- ── INVENTARIO ─────────────────────── -->
+<section id="sec-inventario" style="display:none">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Inventario</div>
+      <div class="page-subtitle">Control de materiales e insumos</div>
+    </div>
+    <div class="page-hdr-actions">
+      <button class="btn bp" onclick="Inventario.abrirModal()">+ Nuevo ítem</button>
+    </div>
+  </div>
+  <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat-card"><div class="stat-icon pr">🏷️</div><div>
+      <div class="stat-num" id="statInvTotal">0</div><div class="stat-lbl">Ítems registrados</div>
+    </div></div>
+    <div class="stat-card"><div class="stat-icon er">⚠️</div><div>
+      <div class="stat-num" id="statInvBajo">0</div><div class="stat-lbl">Stock bajo</div>
+    </div></div>
+    <div class="stat-card"><div class="stat-icon ok">💵</div><div>
+      <div class="stat-num" id="statInvValor">$0</div><div class="stat-lbl">Valor inventario</div>
+    </div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🏷️ Ítems de inventario</div>
+      <div class="search-bar" style="max-width:240px">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInventario" placeholder="Buscar ítem...">
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nombre</th><th>Categoría</th><th>Descripción</th><th>Stock</th><th>Mín.</th><th>P. Unit.</th><th>Acciones</th></tr></thead>
+        <tbody id="inventarioTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMPRAS ─────────────────────── -->
+<section id="sec-compras" style="display:none">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Compras</div>
+      <div class="page-subtitle">Registro de compras y gastos</div>
+    </div>
+    <div class="page-hdr-actions">
+      <button class="btn bp" onclick="Compras.abrirModal()">+ Registrar compra</button>
+    </div>
+  </div>
+  <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat-card"><div class="stat-icon wa">📅</div><div>
+      <div class="stat-num" id="statComprasMes">$0</div><div class="stat-lbl">Compras este mes</div>
+    </div></div>
+    <div class="stat-card"><div class="stat-icon pr">📊</div><div>
+      <div class="stat-num" id="statComprasTotal">$0</div><div class="stat-lbl">Total acumulado</div>
+    </div></div>
+    <div class="stat-card"><div class="stat-icon in">🛒</div><div>
+      <div class="stat-num" id="statComprasN">0</div><div class="stat-lbl">Registros</div>
+    </div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🛒 Historial de compras</div>
+      <div class="search-bar" style="max-width:240px">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchCompras" placeholder="Buscar compra...">
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Fecha</th><th>Proveedor</th><th>Descripción</th><th>Categoría</th><th>Cantidad</th><th>Total</th><th>Acciones</th></tr></thead>
+        <tbody id="comprasTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── COTIZACIONES ─────────────────────── -->
+<section id="sec-cotizaciones" style="display:none">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Cotizaciones</div>
+      <div class="page-subtitle">Presupuestos y propuestas para clientes</div>
+    </div>
+    <div class="page-hdr-actions">
+      <button class="btn bp" onclick="Cotizaciones.abrirModal()">+ Nueva cotización</button>
+    </div>
+  </div>
+  <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat-card"><div class="stat-icon pr">📄</div><div>
+      <div class="stat-num" id="statCotTotal">0</div><div class="stat-lbl">Total cotizaciones</div>
+    </div></div>
+    <div class="stat-card"><div class="stat-icon ok">✅</div><div>
+      <div class="stat-num" id="statCotAcept">0</div><div class="stat-lbl">Aceptadas</div>
+    </div></div>
+    <div class="stat-card"><div class="stat-icon wa">💰</div><div>
+      <div class="stat-num" id="statCotValor">$0</div><div class="stat-lbl">Valor aceptado</div>
+    </div></div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📄 Lista de cotizaciones</div>
+      <div class="search-bar" style="max-width:240px">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchCotizaciones" placeholder="Buscar cotización...">
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>N°</th><th>Fecha</th><th>Cliente</th><th>Título</th><th>Estado</th><th>Total</th><th>Acciones</th></tr></thead>
+        <tbody id="cotTbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ── MI NEGOCIO ─────────────────────── -->
+<section id="sec-negocio" style="display:none">
+  <div class="page-hdr">
+    <div class="page-hdr-left">
+      <div class="page-title">Mi Negocio</div>
+      <div class="page-subtitle">Configuración del sitio y datos del negocio</div>
+    </div>
+    <div class="page-hdr-actions">
+      <button class="btn bp" onclick="guardarNegocio()">💾 Guardar cambios</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem">
+    <div class="card">
+      <div class="card-header"><div class="card-title">📋 Información básica</div></div>
+      <div class="card-body">
+        <div class="form-group"><label>Nombre del negocio</label>
+          <input type="text" id="cfgName" placeholder="Ej: Confecciones Pérez"></div>
+        <div class="form-group"><label>Slogan / tagline</label>
+          <input type="text" id="cfgTagline" placeholder="Ej: Cosemos con corazón"></div>
+        <div class="form-group"><label>Teléfono / WhatsApp</label>
+          <input type="text" id="cfgPhone" placeholder="+56912345678"></div>
+        <div class="form-group"><label>Email de contacto</label>
+          <input type="email" id="cfgEmail" placeholder="contacto@negocio.cl"></div>
+        <div class="form-group"><label>Dirección</label>
+          <input type="text" id="cfgAddress" placeholder="Calle 123, Ciudad"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Instagram</label>
+            <input type="url" id="cfgIg" placeholder="https://instagram.com/..."></div>
+          <div class="form-group"><label>Facebook</label>
+            <input type="url" id="cfgFb" placeholder="https://facebook.com/..."></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">🖼️ Imágenes del sitio</div></div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>Logo del negocio</label>
+          <div style="display:flex;gap:.75rem;align-items:center;margin-bottom:.5rem">
+            <div id="logoPreview" style="width:60px;height:60px;border-radius:50%;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;border:2px solid var(--g3)">✂️</div>
+            <button class="btn bs" onclick="document.getElementById('logoFile').click()">Subir logo</button>
+            <input type="file" id="logoFile" accept="image/*" style="display:none" onchange="previewImg(this,'logoPreview','cfgLogoImg')">
+            <input type="hidden" id="cfgLogoImg">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Imagen principal (hero del sitio)</label>
+          <div class="dz" onclick="document.getElementById('heroFile').click()" id="heroDz">
+            <div class="dz-icon">🏔️</div>
+            <div>Arrastra o haz clic para subir la imagen del banner</div>
+            <input type="file" id="heroFile" accept="image/*" onchange="previewImg(this,'heroDz','cfgHeroImg',true)">
+            <input type="hidden" id="cfgHeroImg">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Foto "Sobre nosotros"</label>
+          <div class="dz" onclick="document.getElementById('aboutFile').click()" id="aboutDz">
+            <div class="dz-icon">📸</div>
+            <div>Foto del taller o de la dueña</div>
+            <input type="file" id="aboutFile" accept="image/*" onchange="previewImg(this,'aboutDz','cfgAboutImg',true)">
+            <input type="hidden" id="cfgAboutImg">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Galería admin -->
+  <div class="card" style="margin-top:0">
+    <div class="card-header">
+      <div class="card-title">🖼️ Galería de trabajos</div>
+      <button class="btn bp" onclick="document.getElementById('galleryAddFile').click()">+ Agregar foto</button>
+      <input type="file" id="galleryAddFile" accept="image/*" multiple style="display:none" onchange="addGalleryPhotos(this.files)">
+    </div>
+    <div class="card-body">
+      <div id="adminGalleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.75rem"></div>
+    </div>
+  </div>
+
+  <!-- Seguridad -->
+  <div class="card" style="margin-top:0">
+    <div class="card-header"><div class="card-title">🔐 Seguridad y cuenta</div></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:700px">
+        <div>
+          <div class="settings-section-title">Cambiar contraseña</div>
+          <div class="form-group"><label>Contraseña actual</label>
+            <input type="password" id="passActual" placeholder="Contraseña actual"></div>
+          <div class="form-group"><label>Nueva contraseña</label>
+            <input type="password" id="passNueva" placeholder="Nueva contraseña (mín. 6 caracteres)"></div>
+          <div class="form-group"><label>Confirmar nueva contraseña</label>
+            <input type="password" id="passConfirm" placeholder="Repetir nueva contraseña"></div>
+          <button class="btn bp" onclick="cambiarPassword()">🔐 Cambiar contraseña</button>
+        </div>
+        <div>
+          <div class="settings-section-title">Respaldo de datos</div>
+          <p style="font-size:.85rem;color:var(--g6);margin-bottom:1rem">
+            Exporta todos tus datos como archivo JSON para tener una copia de seguridad local.
+          </p>
+          <button class="btn bs" style="width:100%;margin-bottom:.75rem" onclick="DB.exportBackup()">
+            📥 Descargar respaldo (JSON)
+          </button>
+          <button class="btn bs" style="width:100%" onclick="document.getElementById('importBackupFile').click()">
+            📤 Restaurar desde respaldo
+          </button>
+          <input type="file" id="importBackupFile" accept=".json" style="display:none"
+            onchange="importarBackup(this.files[0])">
+          <p style="font-size:.75rem;color:var(--g5);margin-top:.75rem">
+            ☁️ Tus datos también se guardan automáticamente en la nube con Firebase.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main><!-- /admin-main -->
+</div><!-- /admin-shell -->
+
+<!-- ================================================================
+     MODALES
+================================================================ -->
+
+<!-- Modal: Nuevo/editar cliente -->
+<div class="modal-backdrop" id="clienteModal">
+<div class="modal">
+  <div class="modal-header">
+    <div class="modal-title" id="clienteModalTitle">Nuevo Cliente</div>
+    <button class="modal-close" onclick="closeMo('clienteModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="clienteId">
+    <div class="form-row">
+      <div class="form-group"><label>Nombre <span class="required">*</span></label>
+        <input type="text" id="clienteNombre" placeholder="Nombre completo"></div>
+      <div class="form-group"><label>Empresa</label>
+        <input type="text" id="clienteEmpresa" placeholder="Nombre de empresa"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>RUT</label>
+        <input type="text" id="clienteRut" placeholder="12.345.678-9"></div>
+      <div class="form-group"><label>Teléfono</label>
+        <input type="text" id="clienteTelefono" placeholder="+56 9 XXXX XXXX"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Email</label>
+        <input type="email" id="clienteEmail" placeholder="correo@ejemplo.cl"></div>
+      <div class="form-group"><label>Ciudad</label>
+        <input type="text" id="clienteCiudad" placeholder="Ciudad"></div>
+    </div>
+    <div class="form-group"><label>Notas</label>
+      <textarea id="clienteNotas" placeholder="Observaciones adicionales..."></textarea></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn bs" onclick="closeMo('clienteModal')">Cancelar</button>
+    <button class="btn bp" onclick="Clientes.guardar()">💾 Guardar</button>
+  </div>
+</div>
+</div>
+
+<!-- Modal: Importar clientes Excel -->
+<div class="modal-backdrop" id="importClientesModal">
+<div class="modal">
+  <div class="modal-header">
+    <div class="modal-title">📥 Importar clientes desde Excel</div>
+    <button class="modal-close" onclick="closeMo('importClientesModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <div class="alert alert-in">
+      Columnas soportadas: <strong>Nombre, Empresa, RUT, Teléfono, Email, Ciudad, Notas</strong>
+    </div>
+    <div class="dz" onclick="document.getElementById('importClientesFile').click()" id="importClientesDz">
+      <div class="dz-icon">📊</div>
+      <div>Arrastra tu archivo Excel (.xlsx, .xls, .csv) aquí o haz clic</div>
+      <input type="file" id="importClientesFile" accept=".xlsx,.xls,.csv"
+        onchange="Clientes.importarExcel(this.files[0]);this.value=''">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn bs" onclick="closeMo('importClientesModal')">Cancelar</button>
+  </div>
+</div>
+</div>
+
+<!-- Modal: Nuevo/editar pedido -->
+<div class="modal-backdrop" id="pedidoModal">
+<div class="modal modal-lg">
+  <div class="modal-header">
+    <div class="modal-title" id="pedidoModalTitle">Nuevo Pedido</div>
+    <button class="modal-close" onclick="closeMo('pedidoModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="pedidoId">
+    <div class="form-group"><label>Título / descripción del pedido <span class="required">*</span></label>
+      <input type="text" id="pedidoTitulo" placeholder="Ej: 50 delantales bordados"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Cliente</label>
+        <select id="pedidoCliente"></select></div>
+      <div class="form-group"><label>Estado</label>
+        <select id="pedidoEstado">
+          <option>Pendiente</option><option>En Proceso</option>
+          <option>Listo</option><option>Entregado</option><option>Cancelado</option>
+        </select></div>
+    </div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Fecha de entrega</label>
+        <input type="date" id="pedidoFechaEntrega"></div>
+      <div class="form-group"><label>Cantidad</label>
+        <input type="number" id="pedidoCantidad" value="1" min="1"></div>
+      <div class="form-group"><label>Total ($)</label>
+        <input type="number" id="pedidoTotal" placeholder="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Anticipo ($)</label>
+        <input type="number" id="pedidoAnticipo" placeholder="0"></div>
+    </div>
+    <div class="form-group"><label>Notas</label>
+      <textarea id="pedidoNotas" placeholder="Detalles del pedido..."></textarea></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn bs" onclick="closeMo('pedidoModal')">Cancelar</button>
+    <button class="btn bp" onclick="Pedidos.guardar()">💾 Guardar pedido</button>
+  </div>
+</div>
+</div>
+
+<!-- Modal: Nuevo/editar inventario -->
+<div class="modal-backdrop" id="invModal">
+<div class="modal">
+  <div class="modal-header">
+    <div class="modal-title" id="invModalTitle">Nuevo ítem</div>
+    <button class="modal-close" onclick="closeMo('invModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="invId">
+    <div class="form-row">
+      <div class="form-group"><label>Nombre <span class="required">*</span></label>
+        <input type="text" id="invNombre" placeholder="Ej: Tela jean azul"></div>
+      <div class="form-group"><label>Categoría</label>
+        <input type="text" id="invCategoria" placeholder="Ej: Telas"></div>
+    </div>
+    <div class="form-group"><label>Descripción</label>
+      <input type="text" id="invDescripcion" placeholder="Descripción opcional"></div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Stock actual</label>
+        <input type="number" id="invStock" placeholder="0" step="0.01"></div>
+      <div class="form-group"><label>Unidad</label>
+        <input type="text" id="invUnidad" placeholder="metros, kg, unidades..."></div>
+      <div class="form-group"><label>Stock mínimo</label>
+        <input type="number" id="invStockMin" placeholder="0" step="0.01"></div>
+    </div>
+    <div class="form-group"><label>Precio unitario ($)</label>
+      <input type="number" id="invPrecioUnit" placeholder="0"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn bs" onclick="closeMo('invModal')">Cancelar</button>
+    <button class="btn bp" onclick="Inventario.guardar()">💾 Guardar</button>
+  </div>
+</div>
+</div>
+
+<!-- Modal: Compra -->
+<div class="modal-backdrop" id="compraModal">
+<div class="modal">
+  <div class="modal-header">
+    <div class="modal-title" id="compraModalTitle">Nueva Compra</div>
+    <button class="modal-close" onclick="closeMo('compraModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="compraId">
+    <div class="form-row">
+      <div class="form-group"><label>Fecha</label>
+        <input type="date" id="compraFecha"></div>
+      <div class="form-group"><label>Proveedor <span class="required">*</span></label>
+        <input type="text" id="compraProveedor" placeholder="Nombre del proveedor"></div>
+    </div>
+    <div class="form-group"><label>Descripción</label>
+      <input type="text" id="compraDescripcion" placeholder="Qué se compró"></div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Categoría</label>
+        <input type="text" id="compraCategoria" placeholder="Telas, hilos..."></div>
+      <div class="form-group"><label>Cantidad</label>
+        <input type="number" id="compraCantidad" placeholder="Cantidad" step="0.01"></div>
+      <div class="form-group"><label>Unidad</label>
+        <input type="text" id="compraUnidad" placeholder="metros, kg..."></div>
+    </div>
+    <div class="form-group"><label>Total pagado ($)</label>
+      <input type="number" id="compraTotal" placeholder="0"></div>
+    <div class="form-group"><label>Notas</label>
+      <textarea id="compraNotas" placeholder="Observaciones..." style="min-height:70px"></textarea></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn bs" onclick="closeMo('compraModal')">Cancelar</button>
+    <button class="btn bp" onclick="Compras.guardar()">💾 Guardar</button>
+  </div>
+</div>
+</div>
+
+<!-- Modal: Cotización -->
+<div class="modal-backdrop" id="cotModal">
+<div class="modal modal-xl">
+  <div class="modal-header">
+    <div class="modal-title" id="cotModalTitle">Nueva Cotización</div>
+    <button class="modal-close" onclick="closeMo('cotModal')">✕</button>
+  </div>
+  <div class="modal-body">
+    <input type="hidden" id="cotId">
+    <div class="form-row">
+      <div class="form-group"><label>Título <span class="required">*</span></label>
+        <input type="text" id="cotTitulo" placeholder="Ej: Cotización delantales empresa ABC"></div>
+      <div class="form-group"><label>Cliente</label>
+        <select id="cotCliente"></select></div>
+    </div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Fecha</label>
+        <input type="date" id="cotFecha"></div>
+      <div class="form-group"><label>Validez (días)</label>
+        <input type="number" id="cotValidez" value="30" min="1"></div>
+      <div class="form-group"><label>Estado</label>
+        <select id="cotEstado">
+          <option>Borrador</option><option>Enviada</option>
+          <option>Aceptada</option><option>Rechazada</option><option>Vencida</option>
+        </select></div>
+    </div>
+
+    <div style="border:1px solid var(--g3);border-radius:var(--radius);overflow:hidden;margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:var(--g1);border-bottom:1px solid var(--g3)">
+        <strong style="font-size:.9rem">Ítems / Productos</strong>
+        <button class="btn bp bsm" onclick="Cotizaciones.addItem()">+ Agregar ítem</button>
+      </div>
+      <table style="width:100%">
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th style="width:80px">Cant.</th>
+            <th style="width:130px">Precio unit.</th>
+            <th style="width:110px;text-align:right">Subtotal</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody id="cotItemsTbody"></tbody>
+      </table>
+      <div style="padding:.75rem 1rem;background:var(--g1);border-top:1px solid var(--g3);text-align:right;font-size:.88rem">
+        <span>Subtotal: <strong id="cotSubtotalDisp">$0</strong></span> &nbsp;|&nbsp;
+        <span>IVA (19%): <strong id="cotIvaDisp">$0</strong></span>
+        <label style="display:inline-flex;align-items:center;gap:.3rem;margin-left:1rem;font-size:.82rem">
+          <input type="checkbox" id="cotConIva" checked onchange="Cotizaciones.calcTotals()"> incluir IVA
+        </label> &nbsp;|&nbsp;
+        <span style="font-size:1rem;font-weight:800;color:var(--pr)">TOTAL: <span id="cotTotalDisp">$0</span></span>
+      </div>
+    </div>
+
+    <div class="form-group"><label>Notas / condiciones</label>
+      <textarea id="cotNotas" placeholder="Condiciones de pago, tiempo de entrega, etc..." style="min-height:80px"></textarea></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn bs" onclick="closeMo('cotModal')">Cancelar</button>
+    <button class="btn bp" onclick="Cotizaciones.guardar()">💾 Guardar cotización</button>
+  </div>
+</div>
+</div>
+
+<!-- Modal: Print cotización -->
+<div class="modal-backdrop" id="cotPrintModal" style="padding:0">
+<div class="modal modal-xl" style="max-height:100vh;border-radius:0;margin:0;width:100%;max-width:900px">
+  <div class="modal-body" id="cotPrintArea"></div>
+</div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ================================================================
+     SCRIPTS
+================================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/db.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/clientes.js"></script>
+<script src="js/pedidos.js"></script>
+<script src="js/nomina.js"></script>
+<script src="js/inventario.js"></script>
+<script src="js/compras.js"></script>
+<script src="js/cotizaciones.js"></script>
+
+<script>
+/* ====== APP SHELL ====== */
+// Inicializar Firebase antes de cualquier otra cosa
+(async function() {
+  Auth.initFirebase();
+  Auth.requireAuth();
+  // Si hay usuario Firebase activo, cargar datos desde Firestore
+  Auth.onAuthChanged(async (user) => {
+    if (user) {
+      DB.setup(user.uid, firebase.firestore());
+      await DB.loadAll();
+      nav('dashboard');
+      // Mostrar email en sidebar
+      const emailEl = document.getElementById('sidebarUserEmail');
+      if (emailEl) emailEl.textContent = user.email;
+    }
+  });
+})();
+
+const SECTIONS = ['dashboard','clientes','pedidos','nomina','inventario','compras','cotizaciones','negocio'];
+const TITLES   = { dashboard:'Dashboard', clientes:'Clientes', pedidos:'Pedidos', nomina:'Nómina',
+  inventario:'Inventario', compras:'Compras', cotizaciones:'Cotizaciones', negocio:'Mi Negocio' };
+
+let currentSection = 'dashboard';
+
+function nav(page) {
+  SECTIONS.forEach(s => {
+    document.getElementById('sec-'+s).style.display = s===page ? '' : 'none';
+    const btn = document.getElementById('nav-'+s);
+    if (btn) btn.classList.toggle('active', s===page);
+  });
+  currentSection = page;
+  document.getElementById('topbarTitle').textContent = TITLES[page] || page;
+  document.getElementById('sidebar').classList.remove('open');
+
+  if (page==='dashboard')    renderDashboard();
+  if (page==='clientes')     Clientes.init();
+  if (page==='pedidos')      Pedidos.init();
+  if (page==='nomina')       Nomina.init();
+  if (page==='inventario')   Inventario.init();
+  if (page==='compras')      Compras.init();
+  if (page==='cotizaciones') Cotizaciones.init();
+  if (page==='negocio')      loadNegocioForm();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+/* ====== DASHBOARD ====== */
+function renderDashboard() {
+  const pedidos = DB.get('pedidos');
+  const hoy = today();
+  const activos   = pedidos.filter(p => p.estado !== 'Entregado' && p.estado !== 'Cancelado');
+  const listos    = pedidos.filter(p => p.estado === 'Listo');
+  const vencidos  = pedidos.filter(p => p.fecha_entrega && p.fecha_entrega < hoy && p.estado !== 'Entregado' && p.estado !== 'Cancelado');
+  const mesActual = hoy.slice(0,7);
+  const ventasMes = pedidos.filter(p => p.fecha_entrega?.startsWith(mesActual) && p.estado === 'Entregado')
+    .reduce((s,p) => s+(p.total||0), 0);
+  const stockBajo = DB.get('inventario').filter(it => it.stock <= (it.stock_min||0)).length;
+
+  document.getElementById('dashPedidos').textContent  = activos.length;
+  document.getElementById('dashListos').textContent   = listos.length;
+  document.getElementById('dashVencidos').textContent = vencidos.length;
+  document.getElementById('dashClientes').textContent = DB.get('clientes').length;
+  document.getElementById('dashVentas').textContent   = fmt$(ventasMes);
+  document.getElementById('dashStockBajo').textContent= stockBajo;
+
+  // Notif dot
+  document.getElementById('notifDot').style.display = (vencidos.length || stockBajo) ? '' : 'none';
+
+  // Próximas entregas
+  const prox = [...activos].sort((a,b)=>(a.fecha_entrega||'9').localeCompare(b.fecha_entrega||'9')).slice(0,5);
+  document.getElementById('dashPedidosTbody').innerHTML = prox.length
+    ? prox.map(p => `<tr><td>#${p.id}</td><td>${p.titulo}</td><td>${p.clienteNombre||'—'}</td>
+        <td>${estadoBadge(p.estado)}</td>
+        <td>${p.fecha_entrega?fmtD(p.fecha_entrega):'—'}</td></tr>`).join('')
+    : '<tr><td colspan="5" class="empty-state" style="padding:1rem">Sin pedidos activos</td></tr>';
+
+  // Últimas cotizaciones
+  const cots = DB.get('cotizaciones').slice(-5).reverse();
+  document.getElementById('dashCotTbody').innerHTML = cots.length
+    ? cots.map(c => `<tr><td>${c.numero||('#'+c.id)}</td><td>${c.clienteNombre||'—'}</td>
+        <td>${fmt$(c.total||0)}</td><td>${estadoBadge(c.estado)}</td></tr>`).join('')
+    : '<tr><td colspan="4" style="text-align:center;padding:1rem;color:var(--g5)">Sin cotizaciones</td></tr>';
+
+  renderContactRequests();
+}
+
+function renderContactRequests() {
+  const reqs = DB.get('contact_requests').slice(-10).reverse();
+  const wrap = document.getElementById('contactRequestsWrap');
+  if (!reqs.length) {
+    wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">📬</div><p>Sin solicitudes de contacto aún.</p></div>';
+    return;
+  }
+  wrap.innerHTML = reqs.map((r,i) => `
+    <div style="border:1px solid var(--g3);border-radius:8px;padding:.9rem 1rem;margin-bottom:.75rem;display:flex;gap:1rem;align-items:flex-start">
+      <div style="width:38px;height:38px;border-radius:50%;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0">👤</div>
+      <div style="flex:1">
+        <div style="font-weight:700">${r.nombre||'—'} <span style="font-weight:400;color:var(--g5);font-size:.82rem">· ${r.tipo||''}</span></div>
+        <div style="font-size:.82rem;color:var(--g6)">📞 ${r.telefono||'—'} · ✉️ ${r.email||'—'}</div>
+        <div style="font-size:.85rem;margin-top:.3rem">${r.mensaje||''}</div>
+      </div>
+      <div style="font-size:.75rem;color:var(--g5);white-space:nowrap">${r.fecha?new Date(r.fecha).toLocaleString('es-CL',{dateStyle:'short',timeStyle:'short'}):''}</div>
+    </div>`).join('');
+}
+
+/* ====== MI NEGOCIO ====== */
+function loadNegocioForm() {
+  const c = DB.getObj('config', {});
+  document.getElementById('cfgName').value    = c.name    || '';
+  document.getElementById('cfgTagline').value = c.tagline || '';
+  document.getElementById('cfgPhone').value   = c.phone   || '';
+  document.getElementById('cfgEmail').value   = c.email   || '';
+  document.getElementById('cfgAddress').value = c.address || '';
+  document.getElementById('cfgIg').value      = c.ig      || '';
+  document.getElementById('cfgFb').value      = c.fb      || '';
+  document.getElementById('cfgLogoImg').value  = c.logoImg  || '';
+  document.getElementById('cfgHeroImg').value  = c.heroImg  || '';
+  document.getElementById('cfgAboutImg').value = c.aboutImg || '';
+  // Preview logo
+  if (c.logoImg) document.getElementById('logoPreview').innerHTML = `<img src="${c.logoImg}" style="width:60px;height:60px;border-radius:50%;object-fit:cover">`;
+  if (c.heroImg)  document.getElementById('heroDz').style.backgroundImage = `url(${c.heroImg})`;
+  if (c.aboutImg) document.getElementById('aboutDz').style.backgroundImage = `url(${c.aboutImg})`;
+  renderAdminGallery();
+}
+
+function guardarNegocio() {
+  const c = DB.getObj('config', {});
+  c.name     = document.getElementById('cfgName').value.trim();
+  c.tagline  = document.getElementById('cfgTagline').value.trim();
+  c.phone    = document.getElementById('cfgPhone').value.trim();
+  c.email    = document.getElementById('cfgEmail').value.trim();
+  c.address  = document.getElementById('cfgAddress').value.trim();
+  c.ig       = document.getElementById('cfgIg').value.trim();
+  c.fb       = document.getElementById('cfgFb').value.trim();
+  c.logoImg  = document.getElementById('cfgLogoImg').value;
+  c.heroImg  = document.getElementById('cfgHeroImg').value;
+  c.aboutImg = document.getElementById('cfgAboutImg').value;
+  DB.setObj('config', c);
+  // Update sidebar brand
+  document.getElementById('sidebarBrand').textContent = c.name || 'ModistaPro';
+  if (c.logoImg) document.getElementById('sidebarLogo').innerHTML = `<img src="${c.logoImg}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--ac)">`;
+  toast('Configuración guardada', 'ok');
+}
+
+function previewImg(input, previewId, hiddenId, isDz=false) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById(hiddenId).value = e.target.result;
+    const prev = document.getElementById(previewId);
+    if (isDz) {
+      prev.style.backgroundImage = `url(${e.target.result})`;
+      prev.style.backgroundSize = 'cover';
+      prev.style.backgroundPosition = 'center';
+      prev.innerHTML = '';
+    } else {
+      prev.innerHTML = `<img src="${e.target.result}" style="width:60px;height:60px;border-radius:50%;object-fit:cover">`;
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ====== GALERÍA ADMIN ====== */
+function addGalleryPhotos(files) {
+  if (!files || !files.length) return;
+  const cfg = DB.getObj('config', {});
+  cfg.gallery = cfg.gallery || [];
+  let pending = files.length;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const title = prompt(`Título para "${file.name}" (opcional):`, '') || '';
+      const cat   = prompt('Categoría (delantales / uniformes / vestidos / otros):', 'delantales') || 'otros';
+      cfg.gallery.push({ src: e.target.result, title, cat, fecha: new Date().toISOString() });
+      if (--pending === 0) {
+        DB.setObj('config', cfg);
+        renderAdminGallery();
+        toast(`${files.length} foto(s) agregada(s)`, 'ok');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderAdminGallery() {
+  const cfg = DB.getObj('config', {});
+  const grid = document.getElementById('adminGalleryGrid');
+  if (!grid) return;
+  const items = cfg.gallery || [];
+  if (!items.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--g5)">Sin fotos. Usa el botón para agregar.</div>';
+    return;
+  }
+  grid.innerHTML = items.map((it,i) => `
+    <div style="position:relative;border-radius:8px;overflow:hidden;aspect-ratio:4/3;border:1px solid var(--g3)">
+      <img src="${it.src}" style="width:100%;height:100%;object-fit:cover">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;transition:.2s;display:flex;align-items:center;justify-content:center;gap:.5rem" class="gallery-admin-overlay">
+        <button class="btn bd bsm" onclick="deleteGalleryItem(${i})" style="font-size:.75rem">🗑️</button>
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#fff;font-size:.72rem;padding:.25rem .5rem">${it.title||'Sin título'} · ${it.cat||''}</div>
+    </div>`).join('');
+  // Hover for overlay
+  grid.querySelectorAll('div[style*="aspect-ratio"]').forEach(el => {
+    el.addEventListener('mouseenter', () => el.querySelector('.gallery-admin-overlay').style.opacity='1');
+    el.addEventListener('mouseleave', () => el.querySelector('.gallery-admin-ov

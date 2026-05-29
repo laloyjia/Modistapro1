@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ModistaPro</title>
+<link rel="stylesheet" href="css/public.css">
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="pub-nav" id="pubNav">
+  <div class="nav-logo">
+    <div class="nav-logo-placeholder" data-logo>✂️</div>
+    <div>
+      <div class="nav-brand" data-cfg="name">Mi Negocio</div>
+      <div class="nav-tagline" data-cfg="tagline">Confecciones a medida</div>
+    </div>
+  </div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#galeria">Galería</a></li>
+    <li><a href="#nosotros">Nosotros</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+    <li><a href="login.html" class="nav-cta">🔐 Admin</a></li>
+  </ul>
+  <button class="nav-burger" id="navBurger" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-particles" id="heroParticles"></div>
+  <div class="hero-content container">
+    <div class="hero-text">
+      <div class="hero-badge">✂️ Confecciones Profesionales</div>
+      <h1 class="hero-title">
+        Creamos prendas <em>únicas</em> para ti y tu empresa
+      </h1>
+      <p class="hero-subtitle" data-cfg="tagline">
+        Delantales, uniformes y confecciones a medida con la más alta calidad.
+        Pedidos individuales y por mayor.
+      </p>
+      <div class="hero-btns">
+        <a href="#contacto" class="hero-btn-primary">💬 Cotizar ahora</a>
+        <a href="#galeria" class="hero-btn-secondary">🖼️ Ver galería</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num" data-count="500" data-suffix="+">0+</div>
+          <div class="hero-stat-lbl">Clientes felices</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num" data-count="5" data-suffix=" años">0 años</div>
+          <div class="hero-stat-lbl">De experiencia</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num" data-count="100" data-suffix="%">0%</div>
+          <div class="hero-stat-lbl">Satisfacción</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-image-wrap">
+      <div class="hero-img-placeholder" id="heroImgWrap">
+        <span>📸</span>
+        Foto principal del negocio
+      </div>
+      <div class="hero-floating-card hero-card-1">
+        <span class="icon">✅</span>
+        <div><strong>Entrega puntual</strong>Cumplimos plazos</div>
+      </div>
+      <div class="hero-floating-card hero-card-2">
+        <span class="icon">⭐</span>
+        <div><strong>Calidad premium</strong>Sin compromiso</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section class="section" id="servicios">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Nuestros servicios</div>
+      <h2 class="section-title">Todo lo que necesitas en un solo lugar</h2>
+      <p class="section-desc">Ofrecemos soluciones de confección para personas y empresas.</p>
+    </div>
+    <div class="services-grid" id="servicesGrid">
+      <!-- Populated by public.js -->
+    </div>
+  </div>
+</section>
+
+<!-- GALERÍA -->
+<section class="section section-alt" id="galeria">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Nuestros trabajos</div>
+      <h2 class="section-title">Galería de creaciones</h2>
+      <p class="section-desc">Cada prenda es una obra de arte hecha con dedicación.</p>
+    </div>
+    <div class="gallery-controls">
+      <button class="gallery-filter-btn active" onclick="Pub.filterGallery('all',this)">Todos</button>
+      <button class="gallery-filter-btn" onclick="Pub.filterGallery('delantales',this)">Delantales</button>
+      <button class="gallery-filter-btn" onclick="Pub.filterGallery('uniformes',this)">Uniformes</button>
+      <button class="gallery-filter-btn" onclick="Pub.filterGallery('vestidos',this)">Vestidos</button>
+      <button class="gallery-filter-btn" onclick="Pub.filterGallery('otros',this)">Otros</button>
+    </div>
+    <div class="gallery-grid" id="galleryGrid">
+      <!-- Populated by public.js -->
+    </div>
+  </div>
+</section>
+
+<!-- NOSOTROS -->
+<section class="section" id="nosotros">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-image-wrap">
+        <div class="about-img-placeholder" id="aboutImgWrap">
+          <span style="font-size:4rem">👩‍🎨</span>
+        </div>
+        <div class="about-badge">
+          <div class="about-badge-num">❤️</div>
+          <div class="about-badge-lbl">Con pasión</div>
+        </div>
+      </div>
+      <div class="about-text">
+        <div class="section-label">Sobre nosotros</div>
+        <h2 class="section-title" style="text-align:left">Cosemos con corazón y dedicación</h2>
+        <p>Somos un emprendimiento familiar especializado en confecciones a medida. Cada prenda que creamos lleva el sello de la calidad y el cariño de nuestro equipo.</p>
+        <p>Trabajamos con empresas e instituciones que necesitan uniformes y delantales personalizados, así como con clientes individuales que buscan prendas únicas.</p>
+        <div class="about-features">
+          <div class="about-feature">Materiales de calidad</div>
+          <div class="about-feature">Bordados personalizados</div>
+          <div class="about-feature">Medidas exactas</div>
+          <div class="about-feature">Entrega puntual</div>
+          <div class="about-feature">Precios justos</div>
+          <div class="about-feature">Atención personalizada</div>
+        </div>
+        <a href="#contacto" class="hero-btn-primary" style="display:inline-flex;margin-top:.5rem">📞 Contáctanos</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section class="section section-alt" id="testimonios">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Testimonios</div>
+      <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+    </div>
+    <div class="testimonials-grid" id="testimonialsGrid">
+      <!-- Populated by public.js -->
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section class="section" id="contacto">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Contáctanos</div>
+      <h2 class="section-title">¿Listo para tu pedido?</h2>
+      <p class="section-desc">Cuéntanos qué necesitas y te enviamos una cotización sin costo.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>Información de contacto</h3>
+        <p>Estamos disponibles para atenderte y resolver todas tus consultas.</p>
+        <div class="contact-items">
+          <div class="contact-item">
+            <div class="contact-item-icon">📞</div>
+            <span data-cfg="phone">+56 9 XXXX XXXX</span>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">✉️</div>
+            <span data-cfg="email">contacto@minegocio.cl</span>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">📍</div>
+            <span data-cfg="address">Dirección del local</span>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">🕐</div>
+            <span>Lun–Vie: 9:00–18:00 · Sáb: 10:00–14:00</span>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <div class="alert alert-ok d-none" id="contactSuccess">
+          ✅ ¡Mensaje enviado! Te contactaremos pronto.
+        </div>
+        <form id="contactForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nombre <span class="required">*</span></label>
+              <input type="text" name="nombre" required placeholder="Tu nombre">
+            </div>
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input type="tel" name="telefono" placeholder="+56 9 XXXX XXXX">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="tu@email.cl">
+          </div>
+          <div class="form-group">
+            <label>¿Qué necesitas? <span class="required">*</span></label>
+            <select name="tipo" required>
+              <option value="">— Seleccionar —</option>
+              <option>Delantales personalizados</option>
+              <option>Uniformes de trabajo</option>
+              <option>Confección a medida</option>
+              <option>Reparación / ajuste</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Mensaje</label>
+            <textarea name="mensaje" placeholder="Cuéntanos más detalles de tu pedido..."></textarea>
+          </div>
+          <button type="submit" class="contact-submit">Enviar solicitud →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="pub-footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name" data-cfg="name">Mi Negocio</div>
+      <div class="footer-brand-desc" data-cfg="tagline">Confecciones a medida con calidad y dedicación.</div>
+      <div class="footer-social">
+        <a href="#" class="footer-social-link" data-cfg="ig" title="Instagram">📸</a>
+        <a href="#" class="footer-social-link" data-cfg="fb" title="Facebook">👍</a>
+        <a href="#" class="footer-social-link" title="WhatsApp">💬</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Navegación</div>
+      <ul class="footer-links">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#galeria">Galería</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Servicios</div>
+      <ul class="footer-links">
+        <li><a href="#servicios">Confección a medida</a></li>
+        <li><a href="#servicios">Delantales</a></li>
+        <li><a href="#servicios">Uniformes</a></li>
+        <li><a href="#servicios">Bordados</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contacto</div>
+      <ul class="footer-links">
+        <li><a data-cfg="phone" href="#">+56 9 XXXX XXXX</a></li>
+        <li><a data-cfg="email" href="#">contacto@negocio.cl</a></li>
+        <li><a data-cfg="address" href="#">Dirección</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© <span id="footerYear"></span> <span data-cfg="name">Mi Negocio</span>. Todos los derechos reservados.</span>
+    <span>Hecho con ❤️ · <a href="login.html">Admin</a></span>
+  </div>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="document.getElementById('lightbox').classList.remove('open')">✕</button>
+  <img src="" alt="">
+  <div class="lightbox-caption"></div>
+</div>
+
+<!-- WhatsApp float -->
+<a class="wa-float" id="waFloat" href="https://wa.me/" target="_blank" title="WhatsApp">💬</a>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/
