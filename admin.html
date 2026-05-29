@@ -1022,5 +1022,71 @@ function deleteGalleryItem(i) {
 /* ====== CONTRASEÑA ====== */
 async function cambiarPassword() {
   const actual  = document.getElementById('passActual').value;
-  const nueva   = document.getElementById('passNueva').value;
-  const confirm = document.getElementById('p
+  const confirm_pass = document.getElementById('passConfirm').value;
+  if (!actual || !nueva) { toast('Completa todos los campos','er'); return; }
+  if (nueva !== confirm_pass) { toast('Las contraseñas no coinciden','er'); return; }
+  if (nueva.length < 6) { toast('La contraseña debe tener al menos 6 caracteres','er'); return; }
+
+  const re = await Auth.reauthenticate(actual);
+  if (!re.ok) { toast('Contraseña actual incorrecta','er'); return; }
+  const res = await Auth.changePassword(nueva);
+  if (res.ok) {
+    toast('Contraseña cambiada correctamente','ok');
+    document.getElementById('passActual').value = '';
+    document.getElementById('passNueva').value = '';
+    document.getElementById('passConfirm').value = '';
+  } else {
+    toast(res.error || 'Error al cambiar contraseña','er');
+  }
+}
+
+/* ====== GLOBAL SEARCH ====== */
+function onGlobalSearch(q) {
+  if (!q || q.length < 2) return;
+  q = q.toLowerCase();
+  const clientes = DB.get('clientes').filter(c =>
+    (c.nombre||'').toLowerCase().includes(q) ||
+    (c.empresa||'').toLowerCase().includes(q)
+  );
+  const pedidos = DB.get('pedidos').filter(p =>
+    (p.titulo||'').toLowerCase().includes(q) ||
+    (p.clienteNombre||'').toLowerCase().includes(q)
+  );
+  if (clientes.length) { nav('clientes'); }
+  else if (pedidos.length) { nav('pedidos'); }
+}
+
+/* ====== INIT ====== */
+(function() {
+  // Aplicar branding inmediato
+  const cfg = DB.getObj('config', {});
+  if (cfg.name) {
+    document.getElementById('sidebarBrand').textContent = cfg.name;
+    document.title = cfg.name + ' · Panel';
+  }
+  if (cfg.logoImg) {
+    document.getElementById('sidebarLogo').innerHTML =
+      `<img src="${cfg.logoImg}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--ac)">`;
+  }
+})();
+
+// Verificar sesión rápida
+if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; }
+
+// Firebase Auth listener
+Auth.initFirebase();
+Auth.onAuthChanged(async function(user) {
+  if (user) {
+    DB.setup(user.uid, firebase.firestore());
+    await DB.loadAll();
+    const emailEl = document.getElementById('sidebarUserEmail');
+    if (emailEl) emailEl.textContent = user.email;
+    nav(currentSection);
+  } else {
+    sessionStorage.removeItem('mp_user');
+    window.location.href = 'login.html';
+  }
+});
+</script>
+</body>
+</html>
