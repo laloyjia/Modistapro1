@@ -151,4 +151,65 @@ const Pedidos = {
       nav('nomina');
     }
   },
+
+  /* ---- Excel Import / Export ---- */
+  descargarPlantilla() {
+    const ws = XLSX.utils.json_to_sheet([{
+      Titulo: 'Delantales empresa ABC',
+      Cliente: 'Nombre del cliente',
+      Estado: 'Pendiente',
+      FechaEntrega: '2026-06-30',
+      Cantidad: 10,
+      Total: 50000,
+      Anticipo: 20000,
+      Notas: 'Notas opcionales'
+    }]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Pedidos');
+    XLSX.writeFile(wb, 'Plantilla_Pedidos.xlsx');
+  },
+
+  importarExcel(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+        const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'_');
+        const map = { titulo:'titulo', pedido:'titulo', orden:'titulo', cliente:'clienteNombre', estado:'estado',
+          fechaentrega:'fecha_entrega', fecha_entrega:'fecha_entrega', entrega:'fecha_entrega',
+          cantidad:'cantidad', total:'total', anticipo:'anticipo', notas:'notas' };
+        const list = this.all();
+        let added = 0;
+        rows.forEach(row => {
+          const obj = { id: DB.nextId('pedidos'), creado: new Date().toISOString(), estado: 'Pendiente' };
+          Object.keys(row).forEach(k => { const t = map[norm(k)]; if (t) obj[t] = String(row[k]).trim(); });
+          if (!obj.titulo) return;
+          if (obj.total) obj.total = parseFloat(obj.total) || 0;
+          if (obj.anticipo) obj.anticipo = parseFloat(obj.anticipo) || 0;
+          if (obj.cantidad) obj.cantidad = parseInt(obj.cantidad) || 1;
+          list.push(obj); added++;
+        });
+        this.save(list);
+        this.render();
+        toast(`${added} pedidos importados`, 'ok');
+      } catch(err) { toast('Error al leer el archivo: ' + err.message, 'er'); }
+    };
+    reader.readAsArrayBuffer(file);
+  },
+
+  exportarExcel() {
+    const list = this.all();
+    if (!list.length) { toast('No hay pedidos para exportar', 'wa'); return; }
+    const ws = XLSX.utils.json_to_sheet(list.map(p => ({
+      ID: p.id, Titulo: p.titulo, Cliente: p.clienteNombre, Estado: p.estado,
+      FechaEntrega: p.fecha_entrega, Cantidad: p.cantidad,
+      Total: p.total, Anticipo: p.anticipo, Notas: p.notas
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Pedidos');
+    XLSX.writeFile(wb, 'Pedidos_ModistaPro.xlsx');
+  },
 };

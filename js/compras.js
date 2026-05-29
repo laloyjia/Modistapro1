@@ -97,4 +97,66 @@ const Compras = {
     this.render();
     toast('Registro eliminado', 'ok');
   },
+
+  /* ---- Excel Import / Export ---- */
+  descargarPlantilla() {
+    const ws = XLSX.utils.json_to_sheet([{
+      Fecha: new Date().toISOString().slice(0,10),
+      Proveedor: 'Textiles Norte',
+      Descripcion: 'Tela algodón blanca',
+      Categoria: 'Telas',
+      Cantidad: 10,
+      Unidad: 'metros',
+      Total: 15000,
+      Notas: ''
+    }]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Compras');
+    XLSX.writeFile(wb, 'Plantilla_Compras.xlsx');
+  },
+
+  importarExcel(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+        const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'_');
+        const map = { fecha:'fecha', date:'fecha', proveedor:'proveedor', provider:'proveedor',
+          descripcion:'descripcion', description:'descripcion', categoria:'categoria',
+          cantidad:'cantidad', qty:'cantidad', unidad:'unidad', unit:'unidad',
+          total:'total', monto:'total', notas:'notas', notes:'notas' };
+        const list = this.all();
+        let added = 0;
+        rows.forEach(row => {
+          const obj = { id: DB.nextId('compras') };
+          Object.keys(row).forEach(k => { const t = map[norm(k)]; if (t) obj[t] = String(row[k]).trim(); });
+          if (!obj.proveedor) return;
+          if (obj.total) obj.total = parseFloat(obj.total) || 0;
+          if (obj.cantidad) obj.cantidad = parseFloat(obj.cantidad) || null;
+          if (!obj.fecha) obj.fecha = new Date().toISOString().slice(0,10);
+          list.push(obj); added++;
+        });
+        this.save(list);
+        this.render();
+        toast(`${added} compras importadas`, 'ok');
+      } catch(err) { toast('Error al leer el archivo: ' + err.message, 'er'); }
+    };
+    reader.readAsArrayBuffer(file);
+  },
+
+  exportarExcel() {
+    const list = this.all();
+    if (!list.length) { toast('No hay compras para exportar', 'wa'); return; }
+    const ws = XLSX.utils.json_to_sheet(list.map(c => ({
+      Fecha: c.fecha, Proveedor: c.proveedor, Descripcion: c.descripcion,
+      Categoria: c.categoria, Cantidad: c.cantidad, Unidad: c.unidad,
+      Total: c.total, Notas: c.notas
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Compras');
+    XLSX.writeFile(wb, 'Compras_ModistaPro.xlsx');
+  },
 };

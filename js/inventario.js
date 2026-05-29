@@ -116,4 +116,64 @@ const Inventario = {
     this.render();
     toast('Ítem eliminado', 'ok');
   },
+
+  /* ---- Excel Import / Export ---- */
+  descargarPlantilla() {
+    const ws = XLSX.utils.json_to_sheet([{
+      Nombre: 'Tela algodón blanca',
+      Categoria: 'Telas',
+      Descripcion: 'Algodón 100% ancho 1.5m',
+      Stock: 50,
+      Unidad: 'metros',
+      StockMinimo: 10,
+      PrecioUnitario: 1200
+    }]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
+    XLSX.writeFile(wb, 'Plantilla_Inventario.xlsx');
+  },
+
+  importarExcel(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+        const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'_');
+        const map = { nombre:'nombre', name:'nombre', categoria:'categoria', category:'categoria',
+          descripcion:'descripcion', stock:'stock', unidad:'unidad', unit:'unidad',
+          stockminimo:'stock_min', stock_min:'stock_min', preciounitario:'precio_unit',
+          precio_unit:'precio_unit', precio:'precio_unit' };
+        const list = this.all();
+        let added = 0;
+        rows.forEach(row => {
+          const obj = { id: DB.nextId('inventario'), actualizado: new Date().toISOString() };
+          Object.keys(row).forEach(k => { const t = map[norm(k)]; if (t) obj[t] = String(row[k]).trim(); });
+          if (!obj.nombre) return;
+          if (obj.stock) obj.stock = parseFloat(obj.stock) || 0;
+          if (obj.stock_min) obj.stock_min = parseFloat(obj.stock_min) || 0;
+          if (obj.precio_unit) obj.precio_unit = parseFloat(obj.precio_unit) || 0;
+          list.push(obj); added++;
+        });
+        this.save(list);
+        this.render();
+        toast(`${added} ítems importados`, 'ok');
+      } catch(err) { toast('Error al leer el archivo: ' + err.message, 'er'); }
+    };
+    reader.readAsArrayBuffer(file);
+  },
+
+  exportarExcel() {
+    const list = this.all();
+    if (!list.length) { toast('No hay ítems para exportar', 'wa'); return; }
+    const ws = XLSX.utils.json_to_sheet(list.map(it => ({
+      Nombre: it.nombre, Categoria: it.categoria, Descripcion: it.descripcion,
+      Stock: it.stock, Unidad: it.unidad, StockMinimo: it.stock_min, PrecioUnitario: it.precio_unit
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
+    XLSX.writeFile(wb, 'Inventario_ModistaPro.xlsx');
+  },
 };

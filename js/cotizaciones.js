@@ -202,8 +202,10 @@ const Cotizaciones = {
       : '—';
 
     printArea.innerHTML = `
-      <div class="cot-toolbar no-print" style="display:flex;gap:.75rem;justify-content:flex-end;margin-bottom:1rem;">
+      <div class="cot-toolbar no-print" style="display:flex;gap:.75rem;justify-content:flex-end;flex-wrap:wrap;margin-bottom:1rem;">
         <button class="btn bs" onclick="document.getElementById('cotPrintArea').innerHTML='';closeMo('cotPrintModal')">← Volver</button>
+        <button class="btn bs" style="background:#25D366;color:#fff;border:none" onclick="Cotizaciones.enviarWhatsApp(${cot.id})">💬 WhatsApp</button>
+        <button class="btn bs" style="background:#4285F4;color:#fff;border:none" onclick="Cotizaciones.enviarEmail(${cot.id})">✉️ Email</button>
         <button class="btn bp" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
       </div>
       <div class="cot-doc">
@@ -254,5 +256,107 @@ const Cotizaciones = {
         </div>
       </div>`;
     openMo('cotPrintModal');
+  },
+
+  /* ---- Enviar por WhatsApp ---- */
+  enviarWhatsApp(id) {
+    const cot = this.all().find(c => c.id === id);
+    if (!cot) return;
+    const cfg = DB.getObj('config', {});
+    const cliente = DB.get('clientes').find(c => c.id === cot.clienteId);
+    const phone   = cliente?.telefono?.replace(/[^0-9]/g, '') || '';
+    const items   = (cot.items || []).map(it => `  • ${it.desc} x${it.qty} → $${(it.qty*it.price).toLocaleString('es-CL')}`).join('\n');
+    const msg = `Hola${cot.clienteNombre ? ' ' + cot.clienteNombre.split(' ')[0] : ''} 👋,\n\n` +
+      `Te enviamos la cotización *${cot.numero || '#'+cot.id}*:\n` +
+      `*${cot.titulo}*\n\n${items}\n\n` +
+      `${cot.conIva ? `Subtotal: $${(cot.subtotal||0).toLocaleString('es-CL')}\nIVA (19%): $${(cot.iva||0).toLocaleString('es-CL')}\n` : ''}` +
+      `*Total: $${(cot.total||0).toLocaleString('es-CL')}*\n\n` +
+      `Válida por ${cot.validez || 30} días.\n\n` +
+      `${cfg.name || ''} · ${cfg.phone || ''}`;
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  },
+
+  /* ---- Enviar por Email ---- */
+  enviarEmail(id) {
+    const cot = this.all().find(c => c.id === id);
+    if (!cot) return;
+    const cfg = DB.getObj('config', {});
+    const cliente = DB.get('clientes').find(c => c.id === cot.clienteId);
+    const to      = cliente?.email || '';
+    const asunto  = `Cotización ${cot.numero || '#'+cot.id} — ${cot.titulo}`;
+    const items   = (cot.items || []).map(it => `  • ${it.desc} x${it.qty} = $${(it.qty*it.price).toLocaleString('es-CL')}`).join('\n');
+    const cuerpo  =
+      `Estimado/a ${cot.clienteNombre || 'cliente'},\n\n` +
+      `Adjunto encontrará la cotización solicitada:\n\n` +
+      `Número: ${cot.numero || '#'+cot.id}\n` +
+      `Descripción: ${cot.titulo}\n` +
+      `Fecha: ${cot.fecha || ''}\n\n` +
+      `DETALLE:\n${items}\n\n` +
+      (cot.conIva ? `Subtotal: $${(cot.subtotal||0).toLocaleString('es-CL')}\nIVA (19%): $${(cot.iva||0).toLocaleString('es-CL')}\n` : '') +
+      `TOTAL: $${(cot.total||0).toLocaleString('es-CL')}\n\n` +
+      `Válida por ${cot.validez || 30} días.\n\n` +
+      (cot.notas ? `Notas: ${cot.notas}\n\n` : '') +
+      `Saludos,\n${cfg.name || 'Mi Negocio'}\n${cfg.phone || ''} · ${cfg.email || ''}`;
+    window.location.href = `mailto:${to}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+  },
+
+  /* ---- Excel Import / Export ---- */
+  descargarPlantilla() {
+    const ws = XLSX.utils.json_to_sheet([{
+      Titulo: 'Delantales personalizados',
+      Cliente: 'Empresa XYZ',
+      Fecha: new Date().toISOString().slice(0,10),
+      Estado: 'Borrador',
+      Total: 0,
+      Notas: ''
+    }]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Cotizaciones');
+    XLSX.writeFile(wb, 'Plantilla_Cotizaciones.xlsx');
+  },
+
+  importarExcel(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, { type: 'array' });
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+        const norm = s => (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'_');
+        const map = { titulo:'titulo', descripcion:'titulo', cliente:'clienteNombre',
+          fecha:'fecha', estado:'estado', total:'total', notas:'notas' };
+        const list = this.all();
+        let added = 0;
+        rows.forEach(row => {
+          const newId = DB.nextId('cotizaciones');
+          const obj = { id: newId, numero: 'COT-'+String(newId).padStart(4,'0'),
+            estado:'Borrador', items:[], subtotal:0, iva:0, total:0, conIva:true,
+            fecha: new Date().toISOString().slice(0,10), validez:30 };
+          Object.keys(row).forEach(k => { const t = map[norm(k)]; if(t) obj[t] = String(row[k]).trim(); });
+          if (!obj.titulo) return;
+          if (obj.total) obj.total = parseFloat(obj.total) || 0;
+          list.push(obj); added++;
+        });
+        this.save(list);
+        this.render();
+        toast(`${added} cotizaciones importadas`, 'ok');
+      } catch(err) { toast('Error al leer el archivo: ' + err.message, 'er'); }
+    };
+    reader.readAsArrayBuffer(file);
+  },
+
+  exportarExcel() {
+    const list = this.all();
+    if (!list.length) { toast('No hay cotizaciones para exportar', 'wa'); return; }
+    const ws = XLSX.utils.json_to_sheet(list.map(c => ({
+      Numero: c.numero, Titulo: c.titulo, Cliente: c.clienteNombre,
+      Fecha: c.fecha, Estado: c.estado, Subtotal: c.subtotal,
+      IVA: c.iva, Total: c.total, Notas: c.notas
+    })));
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Cotizaciones');
+    XLSX.writeFile(wb, 'Cotizaciones_ModistaPro.xlsx');
   },
 };

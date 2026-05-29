@@ -240,6 +240,11 @@
       <div class="page-subtitle">Gestión de órdenes y entregas</div>
     </div>
     <div class="page-hdr-actions">
+      <button class="btn bs" onclick="Pedidos.descargarPlantilla()">📋 Plantilla</button>
+      <button class="btn bs" onclick="document.getElementById('importPedidosFile').click()">📥 Importar Excel</button>
+      <input type="file" id="importPedidosFile" accept=".xlsx,.xls,.csv" style="display:none"
+        onchange="Pedidos.importarExcel(this.files[0]);this.value=''">
+      <button class="btn bs" onclick="Pedidos.exportarExcel()">📤 Exportar</button>
       <button class="btn bp" onclick="Pedidos.abrirModal()">+ Nuevo pedido</button>
     </div>
   </div>
@@ -312,6 +317,11 @@
       <div class="page-subtitle">Control de materiales e insumos</div>
     </div>
     <div class="page-hdr-actions">
+      <button class="btn bs" onclick="Inventario.descargarPlantilla()">📋 Plantilla</button>
+      <button class="btn bs" onclick="document.getElementById('importInvFile').click()">📥 Importar Excel</button>
+      <input type="file" id="importInvFile" accept=".xlsx,.xls,.csv" style="display:none"
+        onchange="Inventario.importarExcel(this.files[0]);this.value=''">
+      <button class="btn bs" onclick="Inventario.exportarExcel()">📤 Exportar</button>
       <button class="btn bp" onclick="Inventario.abrirModal()">+ Nuevo ítem</button>
     </div>
   </div>
@@ -351,6 +361,11 @@
       <div class="page-subtitle">Registro de compras y gastos</div>
     </div>
     <div class="page-hdr-actions">
+      <button class="btn bs" onclick="Compras.descargarPlantilla()">📋 Plantilla</button>
+      <button class="btn bs" onclick="document.getElementById('importComprasFile').click()">📥 Importar Excel</button>
+      <input type="file" id="importComprasFile" accept=".xlsx,.xls,.csv" style="display:none"
+        onchange="Compras.importarExcel(this.files[0]);this.value=''">
+      <button class="btn bs" onclick="Compras.exportarExcel()">📤 Exportar</button>
       <button class="btn bp" onclick="Compras.abrirModal()">+ Registrar compra</button>
     </div>
   </div>
@@ -390,6 +405,11 @@
       <div class="page-subtitle">Presupuestos y propuestas para clientes</div>
     </div>
     <div class="page-hdr-actions">
+      <button class="btn bs" onclick="Cotizaciones.descargarPlantilla()">📋 Plantilla</button>
+      <button class="btn bs" onclick="document.getElementById('importCotFile').click()">📥 Importar Excel</button>
+      <input type="file" id="importCotFile" accept=".xlsx,.xls,.csv" style="display:none"
+        onchange="Cotizaciones.importarExcel(this.files[0]);this.value=''">
+      <button class="btn bs" onclick="Cotizaciones.exportarExcel()">📤 Exportar</button>
       <button class="btn bp" onclick="Cotizaciones.abrirModal()">+ Nueva cotización</button>
     </div>
   </div>
